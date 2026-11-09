@@ -105,6 +105,8 @@
     display:inline-flex;
     align-items:center;
     gap:8px;
+    white-space:nowrap;
+    flex-shrink:0;
   }
   .brand .dot{color:var(--pink);}
   .brand-icon{width:28px; height:28px; flex:none;}
@@ -126,6 +128,12 @@
   }
   .nav-links a:hover, .nav-links a:focus-visible{opacity:1; text-decoration:underline;}
   @media (max-width:760px){ .nav-links{display:none;} }
+  @media (max-width:480px){
+    .nav-row{gap:10px;}
+    .brand{font-size:1.05rem; gap:6px;}
+    .brand-icon{width:22px; height:22px;}
+    #nav-wa{padding:10px 16px; font-size:.78rem;}
+  }
 
   /* Sticker-style keys: a flat rounded-rect chip with a crisp, hard-edged
      offset shadow (no blur) sitting behind it — not a mechanical keycap
