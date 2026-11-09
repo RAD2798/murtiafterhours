@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murti After Hours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ DESIGN TOKENS ============ */
+  /* Layout: retro flower-power groovy, simplified to a straight-to-the-point
+     flow — a text-only statement headline, then the current collection
+     listed directly below it, each piece one tap from a WhatsApp message.
+     A single committed cream/pink/orange palette by design — no dark-mode swap. */
+  :root{
+    --cream:#F6E3C6;
+    --cream-2:#FBF0DD;
+    --pink:#F2869E;
+    --pink-deep:#EA5586;
+    --orange:#F06A2E;
+    --orange-deep:#D85A22;
+    --ink:#3E2416;
+    --ink-soft:#8A5A42;
+    --paper:#FFF8EE;
+    --radius:26px;
+    --shadow:0 14px 30px rgba(62,36,22,.16);
+    --key-shadow:rgba(62,36,22,.3);
+    --font-display:'Quicksand', system-ui, sans-serif;
+    --font-body:'Quicksand', system-ui, sans-serif;
+    --font-key:'Quicksand', system-ui, sans-serif;
+    color-scheme: light;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-weight:500;
+    line-height:1.55;
+  }
+  h1,h2,h3,.display{
+    font-family:var(--font-display);
+    font-weight:600;
+    text-wrap:balance;
+    margin:0;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;}
+  img{max-width:100%;display:block;}
+
+  .wrap{
+    max-width:1180px;
+    margin-inline:auto;
+    padding-left:max(16px, env(safe-area-inset-left, 0px));
+    padding-right:max(16px, env(safe-area-inset-right, 0px));
+    position:relative;
+  }
+
+  /* ---------- decorative sparkles ---------- */
+  .sparkle{
+    position:absolute;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    pointer-events:none;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .sparkle{animation:twinkle 3.4s ease-in-out infinite;}
+  }
+  @keyframes twinkle{
+    0%,100%{opacity:.55; transform:scale(1) rotate(0deg);}
+    50%{opacity:1; transform:scale(1.15) rotate(8deg);}
+  }
+
+  /* ---------- blob (used behind each earring's placeholder icon) ---------- */
+  .blob{position:absolute; inset:0; z-index:0;}
+
+  /* ---------- header ---------- */
+  header.band{
+    position:sticky;
+    top:env(safe-area-inset-top, 0px);
+    z-index:30;
+    background:var(--orange);
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0 0 auto;
+    height:env(safe-area-inset-top, 0px);
+    z-index:31;
+    background:var(--orange);
+  }
+  .nav-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding-block:16px;
+  }
+  .brand{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.4rem;
+    color:var(--cream-2);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .brand .dot{color:var(--pink);}
+  .brand-icon{width:28px; height:28px; flex:none;}
+  .nav-links{
+    display:flex;
+    gap:26px;
+    list-style:none;
+    margin:0;
+    padding:0;
+    font-weight:700;
+    font-size:.86rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+  .nav-links a{
+    text-decoration:none;
+    color:var(--cream-2);
+    opacity:.92;
+  }
+  .nav-links a:hover, .nav-links a:focus-visible{opacity:1; text-decoration:underline;}
+  @media (max-width:760px){ .nav-links{display:none;} }
+
+  /* Sticker-style keys: a flat rounded-rect chip with a crisp, hard-edged
+     offset shadow (no blur) sitting behind it — not a mechanical keycap
+     wall. Pressing the key slides it down into its own shadow. */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--font-key);
+    font-weight:700;
+    font-size:.88rem;
+    padding:14px 24px;
+    border-radius:14px;
+    border:none;
+    cursor:pointer;
+    text-decoration:none;
+    white-space:nowrap;
+    transform:translate(0,0);
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  .btn:active{transform:translate(4px, 5px);}
+  .btn:focus-visible{outline:3px solid var(--ink); outline-offset:3px;}
+  .btn svg{width:18px;height:18px;flex:none;}
+  .btn-pink{
+    background:var(--pink-deep);
+    color:var(--paper);
+    box-shadow:5px 6px 0 0 var(--key-shadow);
+  }
+  .btn-pink:active{box-shadow:1px 1px 0 0 var(--key-shadow);}
+  .btn-outline,
+  .btn-cream{
+    background:var(--cream-2);
+    color:var(--ink);
+    box-shadow:5px 6px 0 0 var(--key-shadow);
+  }
+  .btn-outline:active,
+  .btn-cream:active{box-shadow:1px 1px 0 0 var(--key-shadow);}
+
+  /* ---------- hero (text only, no photo) ---------- */
+  .hero.band .wrap{
+    padding-block:64px 56px;
+    display:grid;
+    justify-items:center;
+    text-align:center;
+  }
+  .hero-copy{max-width:640px;}
+  .eyebrow{
+    display:inline-block;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    font-size:.78rem;
+    color:var(--orange-deep);
+    margin-bottom:10px;
+  }
+  .hero-copy h1{
+    font-size:clamp(2rem, 4vw + 1rem, 3.1rem);
+    line-height:1.1;
+  }
+  .hero-copy h1 .hl{color:var(--pink-deep); white-space:nowrap;}
+  .hero-copy h2{
+    margin:16px auto 0;
+    max-width:48ch;
+    color:var(--ink-soft);
+    font-size:1.05rem;
+    font-weight:600;
+    font-family:var(--font-body);
+  }
+
+  /* ---------- strip ---------- */
+  .strip.band{background:var(--pink-deep); color:var(--paper); overflow:hidden; white-space:nowrap;}
+  .strip .track{
+    display:inline-flex;
+    gap:2.2rem;
+    padding-block:13px;
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1rem;
+  }
+  @media (prefers-reduced-motion: no-preference){ .strip .track{animation:scroll 20s linear infinite;} }
+  @keyframes scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  /* ---------- gallery ---------- */
+  .gallery.band .wrap{padding-block:56px 72px;}
+  .gallery-head{margin-bottom:28px; text-align:center;}
+  .gallery-head h2{font-size:clamp(1.6rem, 2.4vw + 1rem, 2.2rem);}
+  .gallery-head p{color:var(--ink-soft); margin-top:8px;}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:16px;
+  }
+  @media (min-width:620px){
+    .grid{grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:22px;}
+  }
+  .card{
+    background:var(--paper);
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 8px 20px rgba(62,36,22,.08);
+    display:flex;
+    flex-direction:column;
+  }
+  .card-media{
+    aspect-ratio:1/1;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    padding:12%;
+  }
+  .card-media .blob{
+    position:absolute;
+    inset:8%;
+    border-radius:50%;
+    z-index:0;
+  }
+  .card-media svg.icon{position:relative; z-index:1; width:46%; height:46%;}
+  .card-media img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .placeholder-tag{
+    position:absolute;
+    left:8px;
+    bottom:8px;
+    z-index:2;
+    font-size:.6rem;
+    font-weight:700;
+    letter-spacing:.02em;
+    background:rgba(62,36,22,.65);
+    color:var(--cream-2);
+    padding:4px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .card-body{padding:12px 14px 14px; display:flex; flex-direction:column; gap:6px;}
+  .card-name{
+    font-family:var(--font-body);
+    font-size:.92rem;
+    font-weight:700;
+    color:var(--ink);
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    overflow:hidden;
+    line-height:1.3;
+    min-height:2.6em;
+  }
+  .card-foot{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:2px;}
+  .price{font-weight:700; font-variant-numeric:tabular-nums; font-family:var(--font-display); color:var(--pink-deep); font-size:1.05rem;}
+  .wa-round{
+    width:36px; height:36px;
+    border-radius:10px;
+    background:var(--pink-deep);
+    color:var(--paper);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:none;
+    border:none;
+    cursor:pointer;
+    text-decoration:none;
+    transform:translate(0,0);
+    box-shadow:3px 4px 0 0 var(--key-shadow);
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  .wa-round svg{width:16px; height:16px;}
+  .wa-round:active{
+    transform:translate(3px, 4px);
+    box-shadow:0 0 0 0 var(--key-shadow);
+  }
+  .wa-round:focus-visible{outline:3px solid var(--ink); outline-offset:2px;}
+
+  .pagination{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    margin-top:32px;
+  }
+  .page-arrow{
+    width:44px; height:44px;
+    border-radius:12px;
+    background:var(--cream-2);
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:none;
+    cursor:pointer;
+    transform:translate(0,0);
+    box-shadow:4px 5px 0 0 var(--key-shadow);
+    transition:transform .08s ease, box-shadow .08s ease, opacity .15s ease;
+  }
+  .page-arrow svg{width:20px; height:20px;}
+  .page-arrow:active{transform:translate(3px, 4px); box-shadow:1px 1px 0 0 var(--key-shadow);}
+  .page-arrow:focus-visible{outline:3px solid var(--ink); outline-offset:2px;}
+  .page-arrow:disabled{opacity:.35; cursor:default;}
+  .page-arrow:disabled:active{transform:translate(0,0); box-shadow:4px 5px 0 0 var(--key-shadow);}
+  .page-indicator{
+    font-family:var(--font-key);
+    font-weight:700;
+    font-size:.82rem;
+    color:var(--ink-soft);
+    min-width:3.6em;
+    text-align:center;
+  }
+
+  /* ---------- how it works ---------- */
+  .how.band{background:var(--cream-2);}
+  .how.band .wrap{padding-block:60px 70px;}
+  .how h2{font-size:clamp(1.6rem, 2.4vw + 1rem, 2.2rem); margin-bottom:34px; text-align:center;}
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    position:relative;
+    align-items:start;
+  }
+  .steps::before{
+    content:"";
+    position:absolute;
+    top:19px;
+    left:16.666%;
+    right:16.666%;
+    height:3px;
+    background:var(--pink);
+    z-index:0;
+  }
+  .step{
+    display:grid;
+    gap:8px;
+    justify-items:center;
+    text-align:center;
+    position:relative;
+    z-index:1;
+    padding:0 6px;
+  }
+  .step-num{
+    width:38px; height:38px; border-radius:50%; flex:none;
+    background:var(--pink-deep); color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-family:var(--font-display);
+    position:relative; z-index:2;
+  }
+  .step h3{font-size:1.05rem;}
+  .step p{color:var(--ink-soft); font-size:.92rem; margin:0; max-width:22ch;}
+  @media (max-width:640px){
+    .steps{gap:4px;}
+    .step{padding:0 2px;}
+    .step-num{width:28px; height:28px; font-size:.82rem;}
+    .steps::before{top:14px;}
+    .step h3{font-size:.82rem;}
+    .step p{font-size:.72rem; max-width:16ch;}
+  }
+
+  /* ---------- footer ---------- */
+  footer.band{background:var(--ink); color:var(--cream-2);}
+  footer.band .wrap{
+    padding-block:44px 36px;
+    display:flex; flex-wrap:wrap; justify-content:space-between; gap:28px;
+  }
+  footer .f-brand{font-family:var(--font-display); font-weight:700; font-size:1.3rem;}
+  footer .f-tag{color:#D8B9A6; font-size:.9rem; max-width:34ch; margin-top:6px;}
+  .f-contact{display:grid; gap:10px; justify-items:start;}
+  .f-number{font-family:var(--font-display); font-weight:600; font-variant-numeric:tabular-nums;}
+  .copy{border-top:1px solid rgba(255,255,255,.14); padding-block:16px; font-size:.82rem; color:#C9A48F;}
+
+  /* ---------- floating WhatsApp ---------- */
+  .float-wa{
+    position:fixed;
+    right:max(20px, calc(env(safe-area-inset-right, 0px) + 12px));
+    bottom:max(20px, calc(env(safe-area-inset-bottom, 0px) + 18px));
+    z-index:40;
+    width:58px; height:58px; border-radius:16px;
+    background:var(--pink-deep); color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:5px 6px 0 0 var(--key-shadow);
+    text-decoration:none;
+    transform:translate(0,0);
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  .float-wa svg{width:28px;height:28px;}
+  .float-wa:active{
+    transform:translate(4px, 5px);
+    box-shadow:1px 1px 0 0 var(--key-shadow);
+  }
+  .float-wa:focus-visible{outline:3px solid var(--ink); outline-offset:3px;}
+
+  [hidden]{display:none!important;}
+</style>
+</head>
+<body>
+<header class="band">
+  <nav class="wrap nav-row">
+    <span class="brand"><span class="dot">✦</span>Murti After Hours</span>
+    <ul class="nav-links">
+      <li><a href="#designs">Collection</a></li>
+      <li><a href="#how">How to order</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a class="btn btn-cream" id="nav-wa" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.23.61 4.33 1.67 6.14L4 29l8.06-1.62a11.9 11.9 0 0 0 3.96.68h.01C22.65 28.06 28 22.66 28 16.04 28 9.42 22.65 3 16.02 3Zm6.98 17.24c-.3.84-1.46 1.55-2.4 1.75-.64.13-1.47.24-4.27-.92-3.58-1.48-5.89-5.1-6.07-5.33-.18-.24-1.44-1.92-1.44-3.66 0-1.74.91-2.6 1.24-2.95.3-.33.66-.4.88-.4.22 0 .44 0 .63.01.2.01.47-.08.74.56.3.72 1 2.48 1.09 2.66.09.18.15.39.03.63-.12.24-.18.39-.36.6-.18.21-.38.47-.54.63-.18.18-.37.37-.16.73.21.36.93 1.54 2 2.5 1.38 1.23 2.54 1.61 2.9 1.79.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.8-.18.33.12 2.08.98 2.44 1.16.36.18.6.27.68.42.09.15.09.86-.21 1.7Z"/></svg>
+      chat.
+    </a>
+  </nav>
+</header>
+
+<section class="hero band">
+  <div class="wrap">
+    <span class="sparkle" style="width:20px;height:20px;top:8%;left:8%;background:var(--orange);"></span>
+    <span class="sparkle" style="width:14px;height:14px;top:14%;right:10%;background:var(--pink-deep);"></span>
+    <span class="sparkle" style="width:12px;height:12px;bottom:6%;left:16%;background:var(--orange-deep);"></span>
+    <div class="hero-copy">
+      <span class="eyebrow">handmade clay jewelry</span>
+      <h1>A hobby that got<br><span class="hl">a little out of hand.</span></h1>
+      <h2>See something you like?<br>Claim it before I get too attached.<br>WhatsApp me to order!</h2>
+    </div>
+  </div>
+</section>
+
+<div class="strip band" aria-hidden="true">
+  <div class="track" id="strip-track"></div>
+</div>
+
+<section class="gallery band" id="designs">
+  <div class="wrap">
+    <div class="gallery-head">
+      <h2>the current collection</h2>
+      <p>Everything in stock right now — one message away from being yours.</p>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="pagination">
+      <button type="button" class="page-arrow" id="prev-page" aria-label="Previous page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <span class="page-indicator" id="page-indicator">1 / 1</span>
+      <button type="button" class="page-arrow" id="next-page" aria-label="Next page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="how band" id="how">
+  <div class="wrap">
+    <h2>how to order</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <h3>pick a design</h3>
+        <p>Browse the collection above and find the pair you want — note the name, it makes things quicker.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <h3>message on whatsapp</h3>
+        <p>Tap "message." on that design, or use the button below. I'll confirm it's in stock within a day.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <h3>pay &amp; ship</h3>
+        <p>Once confirmed, I'll share payment and shipping details and get your earrings packed and sent out.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="band" id="contact">
+  <div class="wrap">
+    <div>
+      <div class="f-brand">Murti After Hours</div>
+      <p class="f-tag">Handmade clay earrings, made in small batches. Message me on WhatsApp for orders, customizations, or just to say hello.</p>
+    </div>
+    <div class="f-contact">
+      <span class="f-number" id="footer-number">+91 00000 00000</span>
+      <a id="footer-wa" class="btn btn-pink" href="#" target="_blank" rel="noopener">chat on whatsapp.</a>
+    </div>
+  </div>
+  <div class="wrap copy">
+    <span id="year"></span> Murti After Hours — all earrings handmade to order.
+  </div>
+</footer>
+
+<a class="float-wa" id="float-wa" href="#" target="_blank" rel="noopener" aria-label="Message on WhatsApp">
+  <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.23.61 4.33 1.67 6.14L4 29l8.06-1.62a11.9 11.9 0 0 0 3.96.68h.01C22.65 28.06 28 22.66 28 16.04 28 9.42 22.65 3 16.02 3Zm6.98 17.24c-.3.84-1.46 1.55-2.4 1.75-.64.13-1.47.24-4.27-.92-3.58-1.48-5.89-5.1-6.07-5.33-.18-.24-1.44-1.92-1.44-3.66 0-1.74.91-2.6 1.24-2.95.3-.33.66-.4.88-.4.22 0 .44 0 .63.01.2.01.47-.08.74.56.3.72 1 2.48 1.09 2.66.09.18.15.39.03.63-.12.24-.18.39-.36.6-.18.21-.38.47-.54.63-.18.18-.37.37-.16.73.21.36.93 1.54 2 2.5 1.38 1.23 2.54 1.61 2.9 1.79.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.8-.18.33.12 2.08.98 2.44 1.16.36.18.6.27.68.42.09.15.09.86-.21 1.7Z"/></svg>
+</a>
+
+<script>
+(function(){
+  "use strict";
+
+  // ======== EDIT THESE TWO ========
+  var BRAND_NAME = "Murti After Hours";
+  var WHATSAPP_NUMBER = "919428663719"; // country code + number, digits only
+
+  // Each object is one earring in the current collection. Add, remove, or
+  // reorder freely — the grid below renders directly from this list.
+  var PRODUCTS = [
+    { id:5, name:"Pixel Heart Pop", price:350,
+      blurb:"Chunky clay arcs with a matte terracotta finish.",
+      shape:"hoop", c1:"var(--pink-deep)", c2:"var(--orange)",
+      image:"assets/earring-04.jpg" },
+    { id:2, name:"Sparkle Cat Charm", price:400,
+      blurb:"A soft hand-shaped petal on a lightweight clay drop.",
+      shape:"dangle", c1:"var(--pink)", c2:"var(--orange)",
+      image:"assets/earring-02.jpg" },
+    { id:3, name:"Tiny Tulip Bloom", price:450,
+      blurb:"A playful scatter of color, pressed in by hand before baking.",
+      shape:"stud", c1:"var(--orange-deep)", c2:"var(--pink)",
+      image:"assets/earring-03.jpg" },
+    { id:4, name:"Arrow & Bloom", price:400,
+      blurb:"An oversized hand-shaped bloom — the one people stop to ask about.",
+      shape:"statement", c1:"var(--pink-deep)", c2:"var(--orange-deep)",
+      image:"assets/earring-05.jpg" },
+    { id:7, name:"Pomegranate Pearl Drop", price:450,
+      blurb:"Two glossy clay pomegranate buds on a dainty pearl drop.",
+      shape:"dangle", c1:"var(--pink-deep)", c2:"var(--orange)",
+      image:"assets/earring-07.jpg" },
+    { id:6, name:"Little Blue Sardine", price:400,
+      blurb:"Layered clay discs fading into blush pink, sealed to a soft shine.",
+      shape:"dangle", c1:"var(--pink)", c2:"var(--orange-deep)",
+      image:"assets/earring-06.jpg" },
+    { id:8, name:"Sailor Stripe Fish", price:400,
+      blurb:"A striped little fish charm, hand-painted in nautical red and blue.",
+      shape:"dangle", c1:"var(--orange)", c2:"var(--pink-deep)",
+      image:"assets/earring-08.jpg" },
+    { id:9, name:"Dotty Little Fish", price:400,
+      blurb:"A spotted little fish charm with a glossy blue-and-white finish.",
+      shape:"dangle", c1:"var(--pink-deep)", c2:"var(--orange)",
+      image:"assets/earring-09.jpg" },
+    { id:10, name:"Fish Bone Doodle", price:400,
+      blurb:"A hand-painted skeleton fish charm in crisp white and blue.",
+      shape:"dangle", c1:"var(--pink)", c2:"var(--orange-deep)",
+      image:"assets/earring-10.jpg" },
+    { id:11, name:"Spicy Little Chili", price:400,
+      blurb:"A glossy little chili charm with a hand-painted green stem.",
+      shape:"dangle", c1:"var(--orange)", c2:"var(--pink-deep)",
+      image:"assets/earring-11.jpg" },
+    { id:12, name:"Moonlit Bloom Charm", price:450,
+      blurb:"A hand-shaped crescent moon with a single painted bloom.",
+      shape:"dangle", c1:"var(--pink)", c2:"var(--orange)",
+      image:"assets/earring-12.jpg" },
+    { id:13, name:"Grumpy Little Sun", price:350,
+      blurb:"A sunbeam charm with a cheeky hand-painted face.",
+      shape:"statement", c1:"var(--orange)", c2:"var(--pink-deep)",
+      image:"assets/earring-13.jpg" },
+    { id:15, name:"Blue Tulip Pebble", price:350,
+      blurb:"A smooth oval charm with a hand-painted tulip in deep blue.",
+      shape:"stud", c1:"var(--pink)", c2:"var(--orange)",
+      image:"assets/earring-15.jpg" },
+    { id:14, name:"Fern Heart Charm", price:350,
+      blurb:"A heart-shaped charm with a delicate hand-painted fern.",
+      shape:"dangle", c1:"var(--orange-deep)", c2:"var(--pink)",
+      image:"assets/earring-14.jpg" },
+    { id:17, name:"Sunny Side Up", price:400,
+      blurb:"A glossy fried-egg charm, sunny side up and just a little wobbly.",
+      shape:"statement", c1:"var(--pink)", c2:"var(--orange)",
+      image:"assets/earring-17.jpg" },
+    { id:16, name:"Retro Flower Pod", price:450,
+      blurb:"A pill-shaped charm with a hand-painted folk flower motif.",
+      shape:"stud", c1:"var(--orange)", c2:"var(--pink-deep)",
+      image:"assets/earring-16.jpg" }
+  ];
+  // =================================
+
+  function waLink(msg){
+    return "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+  }
+
+  function icon(shape, c1, c2){
+    if(shape === "stud"){
+      return '<svg class="icon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="34" fill="'+c1+'"/><circle cx="50" cy="50" r="13" fill="'+c2+'"/></svg>';
+    }
+    if(shape === "hoop"){
+      return '<svg class="icon" viewBox="0 0 100 100"><circle cx="50" cy="46" r="30" fill="none" stroke="'+c1+'" stroke-width="12"/><circle cx="50" cy="16" r="5" fill="'+c2+'"/></svg>';
+    }
+    if(shape === "dangle"){
+      return '<svg class="icon" viewBox="0 0 100 100"><circle cx="50" cy="22" r="8" fill="'+c2+'"/><rect x="47" y="30" width="6" height="14" fill="'+c2+'"/><ellipse cx="50" cy="66" rx="26" ry="30" fill="'+c1+'"/></svg>';
+    }
+    return '<svg class="icon" viewBox="0 0 100 100">'
+      + '<ellipse cx="50" cy="50" rx="30" ry="14" fill="'+c1+'" transform="rotate(0 50 50)"/>'
+      + '<ellipse cx="50" cy="50" rx="30" ry="14" fill="'+c1+'" transform="rotate(60 50 50)"/>'
+      + '<ellipse cx="50" cy="50" rx="30" ry="14" fill="'+c1+'" transform="rotate(120 50 50)"/>'
+      + '<circle cx="50" cy="50" r="12" fill="'+c2+'"/>'
+      + '</svg>';
+  }
+
+  function money(n){ return "₹" + n; }
+
+  function renderCard(p){
+    var el = document.createElement("article");
+    el.className = "card";
+    var media = p.image
+      ? '<img src="'+p.image+'" alt="'+p.name+'" loading="lazy">'
+      : '<div class="blob" style="background:color-mix(in srgb, '+p.c1+' 30%, var(--cream-2));"></div>'
+        + icon(p.shape, p.c1, p.c2)
+        + '<span class="placeholder-tag">sample — add your photo</span>';
+    el.innerHTML =
+      '<div class="card-media">'
+        + media
+      + '</div>'
+      + '<div class="card-body">'
+        + '<h3 class="card-name">'+p.name+'</h3>'
+        + '<div class="card-foot">'
+          + '<span class="price">'+money(p.price)+'</span>'
+          + '<a class="wa-round" target="_blank" rel="noopener" aria-label="Message about '+p.name+' on WhatsApp" href="'+waLink("Hi! I'd love to order the " + p.name + " (" + money(p.price) + ") — is it still available?")+'">'
+            + '<svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.23.61 4.33 1.67 6.14L4 29l8.06-1.62a11.9 11.9 0 0 0 3.96.68h.01C22.65 28.06 28 22.66 28 16.04 28 9.42 22.65 3 16.02 3Zm6.98 17.24c-.3.84-1.46 1.55-2.4 1.75-.64.13-1.47.24-4.27-.92-3.58-1.48-5.89-5.1-6.07-5.33-.18-.24-1.44-1.92-1.44-3.66 0-1.74.91-2.6 1.24-2.95.3-.33.66-.4.88-.4.22 0 .44 0 .63.01.2.01.47-.08.74.56.3.72 1 2.48 1.09 2.66.09.18.15.39.03.63-.12.24-.18.39-.36.6-.18.21-.38.47-.54.63-.18.18-.37.37-.16.73.21.36.93 1.54 2 2.5 1.38 1.23 2.54 1.61 2.9 1.79.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.8-.18.33.12 2.08.98 2.44 1.16.36.18.6.27.68.42.09.15.09.86-.21 1.7Z"/></svg>'
+          + '</a>'
+        + '</div>'
+      + '</div>';
+    return el;
+  }
+
+  var CLOCK_ICON = '<svg class="brand-icon" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    + '<path d="M36,32 L18,14"/><path d="M10,18 Q16,6 26,10"/>'
+    + '<path d="M64,32 L82,14"/><path d="M74,10 Q84,6 90,18"/>'
+    + '<circle cx="50" cy="56" r="30"/>'
+    + '<path d="M50,34 L50,56 L66,56"/>'
+    + '<path d="M40,84 L58,99"/><path d="M60,84 L42,99"/>'
+    + '<circle cx="50" cy="30" r="2.6" fill="currentColor" stroke="none"/>'
+    + '<circle cx="68" cy="38" r="2.6" fill="currentColor" stroke="none"/>'
+    + '<circle cx="76" cy="56" r="2.6" fill="currentColor" stroke="none"/>'
+    + '<circle cx="68" cy="74" r="2.6" fill="currentColor" stroke="none"/>'
+    + '<circle cx="50" cy="82" r="2.6" fill="currentColor" stroke="none"/>'
+    + '<circle cx="32" cy="74" r="2.6" fill="currentColor" stroke="none"/>'
+    + '<circle cx="24" cy="56" r="2.6" fill="currentColor" stroke="none"/>'
+    + '<circle cx="32" cy="38" r="2.6" fill="currentColor" stroke="none"/>'
+    + '</svg>';
+
+  var PAGE_SIZE = 4;
+  var currentPage = 0;
+
+  function renderGrid(){
+    var totalPages = Math.max(1, Math.ceil(PRODUCTS.length / PAGE_SIZE));
+    currentPage = Math.min(currentPage, totalPages - 1);
+
+    var grid = document.getElementById("grid");
+    grid.innerHTML = "";
+    var start = currentPage * PAGE_SIZE;
+    PRODUCTS.slice(start, start + PAGE_SIZE).forEach(function(p){ grid.appendChild(renderCard(p)); });
+
+    document.getElementById("page-indicator").textContent = (currentPage + 1) + " / " + totalPages;
+    document.getElementById("prev-page").disabled = currentPage === 0;
+    document.getElementById("next-page").disabled = currentPage >= totalPages - 1;
+  }
+
+  function goToPage(delta){
+    currentPage += delta;
+    renderGrid();
+    document.getElementById("designs").scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function init(){
+    document.title = BRAND_NAME;
+    document.querySelectorAll(".brand, .f-brand").forEach(function(el){
+      el.innerHTML = el.classList.contains("brand") ? CLOCK_ICON : "";
+      el.appendChild(document.createTextNode(BRAND_NAME));
+    });
+
+    var generalMsg = "Hi! I saw your clay earrings page and wanted to know more.";
+    document.getElementById("nav-wa").href = waLink(generalMsg);
+    document.getElementById("footer-wa").href = waLink(generalMsg);
+    document.getElementById("float-wa").href = waLink(generalMsg);
+
+    var displayNumber = "+" + WHATSAPP_NUMBER.replace(/(\d{2})(\d{5})(\d{5})/, "$1 $2 $3");
+    document.getElementById("footer-number").textContent = displayNumber;
+
+    var words = ["Handmade","Lightweight","Small‑batch","Made to order"];
+    document.getElementById("strip-track").textContent = (words.concat(words)).join("   ✦   ");
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    document.getElementById("prev-page").addEventListener("click", function(){ goToPage(-1); });
+    document.getElementById("next-page").addEventListener("click", function(){ goToPage(1); });
+
+    renderGrid();
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
